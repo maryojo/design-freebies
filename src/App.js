@@ -1,12 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createClient } from 'contentful';
 import ResourceCard from './components/ResourceCard';
 import resources from './components/resources';
+import { fetchResources } from './components/contentful';
 
 const ITEMS_PER_PAGE = 15;
 
+const client = createClient({
+  space: process.env.REACT_APP_SPACE_ID,
+  accessToken: process.env.REACT_APP_ACCESS_TOKEN,
+});
+
 function App() {
+  const [resources, setResources] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [visibleItems, setVisibleItems] = useState(ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        const entry = await client.getEntry(process.env.REACT_APP_ENTRY_ID);
+        console.log(entry);
+        // setResources(items);
+      } catch (error) {
+        console.error('Error fetching resources:', error);
+      }
+    };
+    fetchResources();
+  }, []);
 
   const categories = ['All', ...new Set(resources.map(resource => resource.category))];
 
@@ -36,8 +57,8 @@ function App() {
         ))}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredResources.slice(0, visibleItems).map(resource => (
-          <ResourceCard key={resource.id} resource={resource} />
+        {filteredResources.slice(0, visibleItems).map((resource, index) => (
+          <ResourceCard key={index} resource={resource} />
         ))}
       </div>
       {visibleItems < filteredResources.length && (
