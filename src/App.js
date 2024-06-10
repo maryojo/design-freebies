@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from 'contentful';
 import ResourceCard from './components/ResourceCard';
 import resources from './components/resources';
-import { fetchResources } from './components/contentful';
 
 const ITEMS_PER_PAGE = 15;
 
